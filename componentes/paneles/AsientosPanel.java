@@ -1,64 +1,170 @@
 package componentes.paneles;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 
 public class AsientosPanel extends JPanel {
-    //lista para guardar todos los botones de los asientos
-    private List<JButton> botonesAsientos;
+   
+    private final List<JButton> botonesAsientos = new ArrayList<>();   //lista para guardar todos los botones de los asientos
+    private final Set<String> asientosSelecionados = new HashSet<>();  //CONJUNTO para guardar los nombres de los asientos seleccionados
 
-    //metodo que recibe el numero de filas y columnas para la creacion de la tabla de asientos
-    public AsientosPanel(int filas, int columnas){
-        setLayout(new  GridLayout(filas, columnas, 5,5));
+   //escalados para darle tamanno a las imgs
+    private final ImageIcon libre = escalar("assets/libre.png");
+    private final ImageIcon ocupado = escalar("assets/ocupado.png");
 
-        //guarda los botones de los asientos
-        botonesAsientos = new ArrayList<>();
 
-        //recorera cada posicion de la cuadricula
-        for (int i = 0; i < filas * columnas; i++){
-            //crear el boton con el numero de asiento Ej: "C1", "C2"...
-            String etiqueta = "C" + (i + 1);
-            JButton asiento = new JButton(etiqueta);
+    //panel interno donde se colocan los asientos
+    private JPanel panelAsientos;
 
-            //si esta disponible se torna de color verde
-            asiento.setBackground(Color.GREEN);
+    //objeto para posicionar cada asiento en coordenadas especificas
+    private GridBagConstraints gbc;
 
-            //al darle click al boton vera si esta disponible o no
-            asiento.addActionListener(e -> {
-                //asiento que ocupa se coloca en rojo
-                if (asiento.getBackground() == Color.GREEN){
-                    asiento.setBackground(Color.RED);
-                } else {
-                    //si ya estaba reservado lo vuelve a disponible
-                    asiento.setBackground(Color.GREEN);
-                }
-            });
 
-            //agregar el boton al panel visual
-            add(asiento);
+    //metodo  constructor 
+    public AsientosPanel(){
+        setLayout(new BorderLayout()); //colocar la pantalla arriba y asientos al centro
+    
+    
 
-            botonesAsientos.add(asiento);
-        }
+        //pantalla de cine
+        JLabel pantalla = new JLabel("PANTALLA", SwingConstants.CENTER); //texto en el centro
+        pantalla.setOpaque(true);
+        pantalla.setBackground(Color.RED);
+        pantalla.setPreferredSize(new Dimension(0,40));
+        pantalla.setForeground(Color.WHITE);
+        add(pantalla, BorderLayout.NORTH);
+
+
+
+        //panel para el posicionamiento libre
+        panelAsientos = new JPanel(new GridBagLayout());
+        add(panelAsientos, BorderLayout.CENTER);   //asientos en el centro
+
+
+
+        //objeto para posicionar cada asiento
+        gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+
+        //secciones
+        agregarIzquierda();
+        agregarDerecho();
+        agregarCentro();
+
     }
 
-        //metodo para obtener los asientos reservados
-        public List<String> getAsientosReservados(){
-            List<String> reservados = new ArrayList<>();
 
-            //revisa cada boton de la lista
-            for(JButton asiento : botonesAsientos){
-                //si esta de color rojo, significa que esta reservado
-                if (asiento.getBackground() == Color.RED){
-                    reservados.add(asiento.getText());  //guarda el nombre del asiento
-                }
+
+
+
+    //seccion Izquierda
+    private void agregarIzquierda(){
+        for(int fila = 0; fila < 3; fila++){
+            for (int columna = 0; columna < 3; columna++){
+                agregarAsiento("A", fila, columna);
             }
-            return reservados; //devolver lista de asientos reservados
+        }
+        for (int columna = 0; columna < 2; columna++){
+            agregarAsiento("E", 4, columna + 1);     //fila extra con 2 asientos
+        }
+    }
+
+    //seccion central
+    private void agregarCentro(){
+        for (int fila = 0; fila < 4; fila++){
+            for (int columna = 0; columna < 4; columna++){
+                agregarAsiento("B", fila, columna + 4); //desplaza al centro usando +5 "espacios"
+            }
+        }
+    }
+
+    //seccion derecha
+    private void agregarDerecho(){
+        for(int fila = 0; fila < 3; fila++){
+            for (int columna = 0; columna < 3; columna++){
+                agregarAsiento("D", fila, columna + 12);
+            }
+        }
+        for (int columna = 0; columna < 2; columna++){
+            agregarAsiento("L", 4, columna + 12);     //fila extra con 2 asientos
+        }
+    }
+
+
+
+
+
+
+
+    //Crea y posiciona un boton para cada asiento
+    private void agregarAsiento(String zona, int fila, int columna){
+        String  etiqueta = zona + (fila *10 + columna +1);  //genera etiqueta unica "C2", "L5"
+
+
+
+        //boton con las img's de asientos
+        JButton asiento = new JButton(etiqueta, libre);
+        asiento.setHorizontalTextPosition(JButton.CENTER);
+        asiento.setContentAreaFilled(false);  //desaparece el fondo del boton
+        asiento.setVerticalTextPosition(JButton.BOTTOM); // etiqueta debajo de la imagen
+        asiento.setBorderPainted(false);  //sin borde 
+
+
+        asiento.addActionListener(e -> {
+            if (asiento.getIcon().equals(libre)){
+                asiento.setIcon(ocupado);      //cambia a ocupado
+                asientosSelecionados.add(etiqueta); //guarda el asiento
+            } else{
+                asiento.setIcon(libre);       //vuelve a libre
+                asientosSelecionados.remove(etiqueta);  //elima de la selecion
+            }
+        });
+
+
+
+
+
+
+        //posiciona el boton en el panel usando coordenadas
+        gbc.gridx = columna;
+        gbc.gridy = fila;
+        panelAsientos.add(asiento, gbc);
+
+        //guardar el boton en la lista
+        botonesAsientos.add(asiento);
+    }
+
+
+
+
+
+
+        //metodo para escalar (hacer mas pequenna o grande) la img
+        private ImageIcon escalar(String ruta){
+                                                                       //tamanno (px)
+            Image img = new ImageIcon(ruta).getImage().getScaledInstance(115, 115, Image.SCALE_SMOOTH);
+            return new ImageIcon(img);
+        }
+
+        //devuelve los nombres de los asientos seleccionados
+        public Set<String> getAsientosSeleccionados(){
+            return asientosSelecionados;
         }
 
     }
-

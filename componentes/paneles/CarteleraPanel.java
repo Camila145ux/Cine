@@ -1,10 +1,8 @@
 package componentes.paneles;
 
 import java.util.List;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.*;
@@ -17,16 +15,16 @@ public class CarteleraPanel extends JPanel {
     // Constructor que recibe una lista de películas para mostrarlas en la cartelera
     public CarteleraPanel(List<Pelicula> peliculas){
       //disenno vertical
-      setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-      setBackground(Color.BLACK);
+      setLayout(new GridLayout(0,2,2,2));
+      setBackground(new Color(70,130,180));
 
 
     //img y titulos
     for (Pelicula movie : peliculas){
         //img
         ImageIcon original = new ImageIcon(movie.getImg());
-        Image img = original.getImage().getScaledInstance(150, 220, Image.SCALE_SMOOTH);
-        ImageIcon portada = new ImageIcon(movie.getImg());
+        Image img = original.getImage().getScaledInstance(150, 220, Image.SCALE_SMOOTH); // dimensiones de las imgs
+        ImageIcon portada = new ImageIcon(img);
 
         //titulo
         JLabel label = new JLabel(movie.getTitulo(), portada, JLabel.CENTER);
