@@ -1,5 +1,5 @@
 package componentes.paneles;
-import views.Reserva;
+import views.TiketVentana;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,14 +28,14 @@ public class ReservaPanel  extends JPanel{
     //metodo constructor
     public ReservaPanel(){
         setLayout(new BorderLayout());
-        setBackground(new Color(80,80,70));
+
 
 
 
         //panel superior con los menus y el boton
         JPanel panelSuperior = new JPanel(new FlowLayout());
-        panelSuperior.setBackground(Color.gray);
-        panelSuperior.setPreferredSize(new Dimension(100, 50));
+        panelSuperior.setBackground(Color.WHITE);
+        panelSuperior.setPreferredSize(new Dimension(150, 80));
 
         
 
@@ -76,7 +76,7 @@ public class ReservaPanel  extends JPanel{
     
             
             } else { //si, SI selecciono el asiento entonces aparecera la info
-               new Reserva(pelicula, dia, hora, asientos);
+               new TiketVentana(pelicula, dia, hora, asientos);
             }
 
         });
